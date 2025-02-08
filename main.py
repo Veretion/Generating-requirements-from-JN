@@ -1,5 +1,3 @@
-# Вставляем весь этот код в ячейку JN и запускаем, работает из коробки в каталог из которого открыт файл
-
 # Укажите полный путь до папки, где нужно сохранить файл requirements.txt
 # Пример для Windows: save_path = r"C:\Users\Username\Project"
 # Пример для Linux/Mac: save_path = "/home/username/project"
@@ -17,8 +15,13 @@ full_path = os.path.join(save_path, file_name) if save_path else file_name
 import sys
 import importlib
 imported_libs = {}
-for name, val in globals().items():
-    if isinstance(val, type(sys)):
+
+# Получаем список имён глобальных переменных перед началом итерации
+global_names = list(globals().keys())
+
+for name in global_names:
+    val = globals().get(name)
+    if isinstance(val, type(sys)):  # Проверяем, является ли значение модулем
         lib_name = val.__name__.split('.')[0]
         if lib_name not in imported_libs:
             try:
@@ -28,9 +31,12 @@ for name, val in globals().items():
                 continue
 
 # Запись в файл
+print(file_name, "Библиотеки:\n")
 with open(full_path, "w") as file:
     for lib, version in imported_libs.items():
+        print(f"{lib}=={version}")
         file.write(f"{lib}=={version}\n")
+print()
 
 # Вывод пути, по которому был создан файл
 print(f"Файл requirements.txt создан по пути: {os.path.abspath(full_path)}")
